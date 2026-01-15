@@ -66,7 +66,7 @@ exports.postAddHome = [
       if (!housename || !location || !price || !rate || !des || !latitude || !longitude) {
         return res.status(400).json({ error: 'All fields are required' });
       }
-      const imageUrl = `${req.protocol}://${req.get('host')}/Uploads/${req.file.filename}`;
+const imageUrl = `https://mybnb-f13q.onrender.com/Uploads/${req.file.filename}`;
       const newHome = new home({
         housename,
         location,
