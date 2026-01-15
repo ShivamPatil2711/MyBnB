@@ -4,8 +4,9 @@
   "description": "Backend for MyBNB application",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
-  },
+"start": "node app.js",
+  
+  "dev": "nodemon app.js"  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "connect-mongodb-session": "^3.1.1",
