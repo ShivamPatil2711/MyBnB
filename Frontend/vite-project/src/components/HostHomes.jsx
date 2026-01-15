@@ -18,7 +18,7 @@ const HostHomes = () => {
 
     const fetchHomes = async () => {
       try {
-        const response = await fetch('https://mybnb-f13q.onrender.com/api/host/host-homes', {
+        const response = await fetch('https://api-mybnb-noss.onrender.com//api/host/host-homes', {
           method: 'GET',
           credentials: 'include', // Include JWT cookie
         });
@@ -37,7 +37,7 @@ const HostHomes = () => {
 
   const handleDeleteHome = async (homeId) => {
     try {
-      const response = await fetch(`https://mybnb-f13q.onrender.com/api/host/deletehome/${homeId}`, {
+      const response = await fetch(`https://api-mybnb-noss.onrender.com//api/host/deletehome/${homeId}`, {
         method: 'POST',
         credentials: 'include',
         headers: {

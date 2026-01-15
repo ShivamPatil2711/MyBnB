@@ -31,7 +31,7 @@ const BookingForm = ({ homeId, onClose }) => {
     }
 
     try {
-      const response = await fetch('https://mybnb-f13q.onrender.com/api/bookings', {
+      const response = await fetch('https://api-mybnb-noss.onrender.com//api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

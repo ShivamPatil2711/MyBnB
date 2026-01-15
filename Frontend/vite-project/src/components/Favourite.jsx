@@ -15,7 +15,7 @@ const Favourite = ({ home, onDelete }) => {
     }
 
     try {
-      const response = await fetch('https://mybnb-f13q.onrender.com/api/deletefavourite', {
+      const response = await fetch('https://api-mybnb-noss.onrender.com//api/deletefavourite', {
         method: 'POST',
         credentials: 'include', // Include JWT cookie
         headers: {

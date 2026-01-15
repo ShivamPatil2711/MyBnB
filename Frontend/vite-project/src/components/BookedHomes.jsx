@@ -7,7 +7,7 @@ const BookedHomes = () => {
     const fetchBookedHomes = async () => {
       try {
         const response = await fetch(
-          "https://mybnb-f13q.onrender.com/api/host/booked-homes",
+          "https://api-mybnb-noss.onrender.com//api/host/booked-homes",
           {
             method: "GET",
             credentials: "include",

@@ -13,7 +13,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://mybnb-f13q.onrender.com/api/login', {
+      const response = await fetch('https://api-mybnb-noss.onrender.com//api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
