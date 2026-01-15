@@ -16,6 +16,7 @@ import Index from "./components/Index";
 import HomeDetails from "./components/HomeDetails";
 import HostEditHome from "./components/HostEditHome";
 import Profile from "./components/Profile";
+import BookedHomes from "./components/BookedHomes";
 function App() {
   const router = createBrowserRouter([
     {
@@ -76,6 +77,14 @@ function App() {
           element: (
             <ProtectedRoute>
               <HostHomes />
+            </ProtectedRoute>
+          ),
+        },
+           {
+          path: "/host/booked-homes",
+          element: (
+            <ProtectedRoute>
+              <BookedHomes />
             </ProtectedRoute>
           ),
         },

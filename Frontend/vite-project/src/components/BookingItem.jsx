@@ -1,12 +1,45 @@
 import { Link } from 'react-router-dom';
-
-const BookingItem = ({ booking }) => {
+import { toast } from "react-toastify";
+import { useNavigate } from 'react-router-dom';
+const BookingItem = ({ booking ,onDelete }) => {
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
+
+async function cancelBooking(booking_id) {
+  try {
+    const response = await fetch(`http://localhost:4002/api/cancelbooking/${booking_id}`, {
+      method: "POST",
+      credentials: "include", // Include JWT cookie
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to cancel booking");
+    }
+
+    
+
+    // ✅ Show success toast
+    toast.success("Booking canceled successfully!");
+onDelete(booking_id);
+     
+  } catch (error) {
+    console.error("Error canceling booking:", error);
+
+    // ✅ Show error toast
+    toast.error(error.message || "Something went wrong");
+    throw error;
+  }
+}
+
 
   return (
     <div className="bg-white shadow-lg rounded-xl overflow-hidden max-w-sm mx-auto hover:shadow-2xl transition-shadow duration-300">
@@ -31,6 +64,13 @@ const BookingItem = ({ booking }) => {
         >
           Details
         </Link>
+<button
+  onClick={() => cancelBooking(booking._id)}
+  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded"
+>
+  Cancel Booking
+</button>
+
       </div>
     </div>
   );

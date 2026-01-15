@@ -9,13 +9,14 @@ const userrouter = require('./routes/userRouter');
 const { hostrouter } = require('./routes/hostRouter');
 const rootDir = require('./utils/pathutil');
 const authrouter = require('./routes/authrouter');
-
+require('dotenv').config(); 
 const app = express();
-const mongodbURL = 'mongodb://127.0.0.1:27017/MyHomes';
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; // Replace with secure key in production
-
+const MONGODB_URL = process.env.MONGODB_URL;
+const JWT_SECRET = process.env.JWT_SECRET;
+const PORT = process.env.PORT ;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 // CORS configuration for frontend at http://localhost:5173
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 
 // Middleware for parsing cookies and request bodies
 app.use(cookieParser());
@@ -43,7 +44,6 @@ app.use((req, res, next) => {
       userType: decoded.userType,
     };
   } catch (error) {
-    console.error('JWT verification error:', error);
     req.isLoggedIn = false;
     req.user = null;
   }
@@ -70,13 +70,13 @@ app.use(errors.error404);
 
 // MongoDB connection and server startup
 mongoose
-  .connect(mongodbURL)
+  .connect(MONGODB_URL)
   .then(() => {
     console.log('Connected to Mongo');
-    app.listen(4002, () => {
-      console.log('Server running on http://localhost:4002');
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('ERROR OCCURRED', err);
+   console.error('ERROR OCCURRED', err);
   });

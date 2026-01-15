@@ -8,6 +8,11 @@ const Bookings = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+   const onDelete = (bookingId) => {
+    setBookings((prevBookings) =>
+      prevBookings.filter((booking) => booking._id !== bookingId)
+    );
+  }
   useEffect(() => {
     const fetchBookings = async () => {
       if (!isLoggedIn) {
@@ -56,6 +61,7 @@ const Bookings = () => {
     <div key={booking._id} className="w-full max-w-sm">
       <BookingItem
         booking={booking}
+        onDelete={onDelete}
         className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
       />
     </div>

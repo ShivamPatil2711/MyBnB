@@ -23,6 +23,7 @@ const Navbar = () => {
   const hostLinks = [
     { to: '/host/airbnb-home', label: 'Add Home' },
     { to: '/host/host-homes', label: 'Host Homes' },
+    { to: '/host/booked-homes', label: 'Booked Homes' },
   ];
 
   const handleLogout = async (e) => {

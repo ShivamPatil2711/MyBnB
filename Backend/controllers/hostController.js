@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const user = require('../models/user');
 const multer = require('multer');
 const path = require('path');
+const booking =require('../models/booking');
 
 // Configure multer
 const storage = multer.diskStorage({
@@ -208,4 +209,42 @@ exports.postDeleteHome = async (req, res, next) => {
     console.error('Error in postDeleteHome:', error);
     res.status(500).json({ error: 'Server error' });
   }
+};
+exports.getBookedHomes = async (req, res, next) => {
+ try {
+    if (!req.isLoggedIn || !req.user) {
+      return res.status(401).json({ error: 'Unauthorized, please log in' });
+    }
+    const userId = req.user._id;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+    const currentUser = await user.findById(userId);
+    const homeids=currentUser.listedhomes || [];
+const bookedHomes = await booking.find({
+  homeId: { $in: homeids }
+})
+.populate({
+  path: "userId",
+  select: "name email"
+})
+.populate({
+  path: "homeId",
+  select: "housename price location img"
+});
+
+
+  console.log(bookedHomes);
+
+    res.json({
+      bookedhomes: bookedHomes,
+      pagetitle: 'My Booked Homes',
+      isLoggedIn: req.isLoggedIn,
+      user: req.user || {},
+    });
+  } catch (error) {
+console.error('Error in getBookedHomes:', error.message, error.stack);
+    res.status(500).json({ error: 'Server error' });
+  }
+ 
 };

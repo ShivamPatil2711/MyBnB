@@ -223,5 +223,28 @@ exports.postAddToFavourites = async (req, res, next) => {
         res.status(500).json({ error: 'Server error' });
       }
   };
+exports.postCancelBooking = async (req, res, next) => {
+    try {
+    if (!req.isLoggedIn || !req.user) {
+      return res.status(401).json({ error: 'Unauthorized, please log in' });
+    }
+    const bookingId = req.params.bookingId;
+    const userId = req.user._id;
+    if (!mongoose.Types.ObjectId.isValid(bookingId) || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid ID' });
+    } 
+    const bookingToCancel = await booking.findOne({ _id: bookingId, userId });
+    if (!bookingToCancel) { 
+      return res.status(404).json({ error: 'Booking not found' });
+    } 
+    await booking.deleteOne({ _id: bookingId });
+    res.json({ message: 'Booking cancelled successfully', redirect: '/bookings' });
+  } catch (error) {
+    console.error('Error cancelling booking:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+
+}
+
 
 
