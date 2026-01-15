@@ -30,7 +30,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://api-mybnb-noss.onrender.com//api/signup', {
+      const response = await fetch('https://api-mybnb-noss.onrender.com/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -14,7 +14,7 @@ const FavouriteList = () => {
         return;
       }
       try {
-        const res = await fetch('https://api-mybnb-noss.onrender.com//api/favourite-list', {
+        const res = await fetch('https://api-mybnb-noss.onrender.com/api/favourite-list', {
           method: 'GET',
           credentials: 'include',
         });

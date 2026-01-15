@@ -11,7 +11,7 @@ useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://api-mybnb-noss.onrender.com//api/homes', {
+      const response = await fetch('https://api-mybnb-noss.onrender.com/api/homes', {
         method: 'GET',
         credentials: 'include',
       });
