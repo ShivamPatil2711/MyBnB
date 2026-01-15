@@ -18,14 +18,13 @@ exports.postLogin = async (req, res, next) => {
     const token = jwt.sign(
       { userId: existingUser._id, email: existingUser.email, userType: existingUser.userType },
       process.env.JWT_SECRET ,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       { expiresIn: '1h' }
     );
     res.cookie('Usercookie', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 1000,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 3600000,
     });
     const userWithoutPassword = {
       _id: existingUser._id,
