@@ -18,7 +18,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL;
 // CORS configuration for frontend at http://localhost:5173
 const allowedOrigins = [
   'http://localhost:5173',                        // local dev
-  'https://joyful-puppy-619815.netlify.app',
+  'https://eloquent-medovik-5dec79.netlify.app',
   'https://my-bn-b.vercel.app',               // production frontend – exact match, no trailing slash
   // Add preview branches if needed, e.g. 'https://my-bnb-tan-git-*.vercel.app'
 ];
