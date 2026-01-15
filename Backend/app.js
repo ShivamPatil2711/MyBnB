@@ -16,7 +16,20 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT ||4002;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 // CORS configuration for frontend at http://localhost:5173
-app.use(cors({ origin: FRONTEND_URL,methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+const allowedOrigins = [
+  'http://localhost:5173',                        // local dev
+  'https://my-bnb-tan.vercel.app'                 // production frontend – exact match, no trailing slash
+  // Add preview branches if needed, e.g. 'https://my-bnb-tan-git-*.vercel.app'
+];
+app.use(cors({ 
+ origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, origin);  // reflect requesting origin
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'], credentials: true ,
   optionsSuccessStatus: 204 
 }));
@@ -28,7 +41,7 @@ app.use(express.static(path.join(rootDir, 'public')));
 app.use(express.json()); // Parse JSON bodies for API
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
-app.use('/Uploads', express.static('Uploads'));
+
 
 // Authentication middleware to verify JWT
 app.use((req, res, next) => {
