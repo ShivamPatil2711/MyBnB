@@ -11,7 +11,7 @@ useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:4002/api/homes', {
+      const response = await fetch('https://mybnb-f13q.onrender.com/api/homes', {
         method: 'GET',
         credentials: 'include',
       });

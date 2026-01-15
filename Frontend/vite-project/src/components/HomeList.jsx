@@ -8,7 +8,7 @@ const HomeList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:4002/api/homes', {
+        const response = await fetch('https://mybnb-f13q.onrender.com/api/homes', {
           method: 'GET',
           credentials: 'include', // Include cookies for session authentication
         });

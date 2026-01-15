@@ -14,7 +14,7 @@ const Home = ({ home }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:4002/api/favourites', {
+      const response = await fetch('https://mybnb-f13q.onrender.com/api/favourites', {
         method: 'POST',
         credentials: 'include', // Include JWT cookie
         headers: {

@@ -26,7 +26,7 @@ const HostEditHome = () => {
 
     const fetchHomeDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:4002/api/homes/${homeId}`, {
+        const response = await fetch(`https://mybnb-f13q.onrender.com/api/homes/${homeId}`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -62,7 +62,7 @@ const HostEditHome = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:4002/api/host/edithome', {
+      const response = await fetch('https://mybnb-f13q.onrender.com/api/host/edithome', {
         method: 'POST',
         credentials: 'include',
         headers: {

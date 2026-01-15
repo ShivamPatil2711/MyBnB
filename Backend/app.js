@@ -16,7 +16,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT ;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 // CORS configuration for frontend at http://localhost:5173
-app.use(cors({ origin: FRONTEND_URL, credentials: true }));
+app.use(cors({ origin: FRONTEND_URL,methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'], credentials: true }));
 
 // Middleware for parsing cookies and request bodies
 app.use(cookieParser());

@@ -42,7 +42,7 @@ const HomeDetails = () => {
   useEffect(() => {
     const fetchHomeDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:4002/api/homes/${homeId}`, {
+        const response = await fetch(`https://mybnb-f13q.onrender.com/api/homes/${homeId}`, {
           method: 'GET',
           credentials: 'include', // Include JWT cookie
         });

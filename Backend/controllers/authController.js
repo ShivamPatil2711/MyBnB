@@ -17,7 +17,8 @@ exports.postLogin = async (req, res, next) => {
     }
     const token = jwt.sign(
       { userId: existingUser._id, email: existingUser.email, userType: existingUser.userType },
-      process.env.JWT_SECRET || 'your_jwt_secret_key',
+      process.env.JWT_SECRET ,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       { expiresIn: '1h' }
     );
     res.cookie('Usercookie', token, {

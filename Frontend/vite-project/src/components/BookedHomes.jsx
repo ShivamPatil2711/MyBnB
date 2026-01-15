@@ -7,7 +7,7 @@ const BookedHomes = () => {
     const fetchBookedHomes = async () => {
       try {
         const response = await fetch(
-          "http://localhost:4002/api/host/booked-homes",
+          "https://mybnb-f13q.onrender.com/api/host/booked-homes",
           {
             method: "GET",
             credentials: "include",

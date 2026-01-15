@@ -11,7 +11,7 @@ const BookingItem = ({ booking ,onDelete }) => {
 
 async function cancelBooking(booking_id) {
   try {
-    const response = await fetch(`http://localhost:4002/api/cancelbooking/${booking_id}`, {
+    const response = await fetch(`https://mybnb-f13q.onrender.com/api/cancelbooking/${booking_id}`, {
       method: "POST",
       credentials: "include", // Include JWT cookie
       headers: {

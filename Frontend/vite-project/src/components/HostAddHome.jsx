@@ -182,7 +182,7 @@ const HostAddHome = () => {
       formDataToSend.append('latitude', formData.latitude);
       formDataToSend.append('longitude', formData.longitude);
 
-      const response = await fetch('http://localhost:4002/api/host/airbnb-home', {
+      const response = await fetch('https://mybnb-f13q.onrender.com/api/host/airbnb-home', {
         method: 'POST',
         credentials: 'include',
         body: formDataToSend,
