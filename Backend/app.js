@@ -13,12 +13,15 @@ require('dotenv').config();
 const app = express();
 const MONGODB_URL = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
-const PORT = process.env.PORT ;
+const PORT = process.env.PORT ||4002;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 // CORS configuration for frontend at http://localhost:5173
 app.use(cors({ origin: FRONTEND_URL,methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'], credentials: true }));
-
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'], credentials: true ,
+  optionsSuccessStatus: 204 
+}));
+// Explicitly handle preflight OPTIONS for all routes (fixes many Render issues)
+app.options('*', cors());
 // Middleware for parsing cookies and request bodies
 app.use(cookieParser());
 app.use(express.static(path.join(rootDir, 'public')));
@@ -29,6 +32,9 @@ app.use('/Uploads', express.static('Uploads'));
 
 // Authentication middleware to verify JWT
 app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
   const token = req.cookies.Usercookie;
   if (!token) {
     req.isLoggedIn = false;
