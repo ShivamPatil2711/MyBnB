@@ -15,7 +15,13 @@ const MONGODB_URL = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT ||4002;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-// CORS configuration for frontend at http://localhost:5173
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dq1ce586s',
+  api_key: process.env.CLOUDINARY_API_KEY || '686862163181649',
+  api_secret: process.env.CLOUDINARY_API_SECRET, // ← must come from .env in production
+});
 const allowedOrigins = [
   'http://localhost:5173',                        // local dev
   'https://eloquent-medovik-5dec79.netlify.app',

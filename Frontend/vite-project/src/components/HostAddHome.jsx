@@ -213,7 +213,7 @@ const HostAddHome = () => {
         
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div>
-            <label for="housename" className="block font-semibold text-red-700 mb-1">
+            <label htmlFor="housename" className="block font-semibold text-red-700 mb-1">
               Housename:
             </label>
             <input
@@ -229,7 +229,7 @@ const HostAddHome = () => {
           </div>
           
           <div>
-            <label for="location" className="block font-semibold text-red-700 mb-1">
+            <label htmlFor="location" className="block font-semibold text-red-700 mb-1">
               Location:
             </label>
             <input
