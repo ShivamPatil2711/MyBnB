@@ -15,14 +15,7 @@ const MONGODB_URL = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT ||4002;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-const cloudinary = require('cloudinary').v2;
-
-const cloudinary = require('cloudinary').v2;
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// CORS configuration for frontend at http://localhost:5173
 const allowedOrigins = [
   'http://localhost:5173',                        // local dev
   'https://eloquent-medovik-5dec79.netlify.app',
@@ -90,7 +83,7 @@ app.use((req, res, next) => {
     res.status(401).json({ error: 'Unauthorized, please log in' });
   }
 });
-
+app.use('/Uploads', express.static('Uploads'));
 app.use(hostrouter);
 
 // Error handling for 404
