@@ -17,10 +17,11 @@ const PORT = process.env.PORT ||4002;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const cloudinary = require('cloudinary').v2;
 
+const cloudinary = require('cloudinary').v2;
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dq1ce586s',
-  api_key: process.env.CLOUDINARY_API_KEY || '686862163181649',
-  api_secret: process.env.CLOUDINARY_API_SECRET, // ← must come from .env in production
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 const allowedOrigins = [
   'http://localhost:5173',                        // local dev
@@ -89,7 +90,7 @@ app.use((req, res, next) => {
     res.status(401).json({ error: 'Unauthorized, please log in' });
   }
 });
-app.use('/Uploads', express.static('Uploads'));
+
 app.use(hostrouter);
 
 // Error handling for 404
