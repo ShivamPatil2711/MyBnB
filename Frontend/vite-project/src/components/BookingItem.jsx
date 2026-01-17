@@ -11,7 +11,7 @@ const BookingItem = ({ booking ,onDelete }) => {
 
 async function cancelBooking(booking_id) {
   try {
-    const response = await fetch(`https://api-mybnb-noss.onrender.com/api/cancelbooking/${booking_id}`, {
+    const response = await fetch(` https://api-mybnb-noss.onrender.com/api/cancelbooking/${booking_id}`, {
       method: "POST",
       credentials: "include", // Include JWT cookie
       headers: {
@@ -44,7 +44,7 @@ onDelete(booking_id);
   return (
     <div className="bg-white shadow-lg rounded-xl overflow-hidden max-w-sm mx-auto hover:shadow-2xl transition-shadow duration-300">
       <img
-        src={booking.homeId.img}
+        src={booking.homeId.img?.url || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
         alt={booking.homeId.housename || 'Home Image'}
         className="w-full h-48 object-cover"
       />

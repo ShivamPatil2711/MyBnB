@@ -15,7 +15,7 @@ const Favourite = ({ home, onDelete }) => {
     }
 
     try {
-      const response = await fetch('https://api-mybnb-noss.onrender.com/api/deletefavourite', {
+      const response = await fetch(' https://api-mybnb-noss.onrender.com/api/deletefavourite', {
         method: 'POST',
         credentials: 'include', // Include JWT cookie
         headers: {
@@ -26,7 +26,7 @@ const Favourite = ({ home, onDelete }) => {
 
       const data = await response.json();
 
-        toast.success(`Removed ${home.housename || 'home'} from favorites`);
+        toast.warn(`Removed ${home.housename || 'home'} from favorites`);
       onDelete(home._id); // Call onDelete to update parent state
     } catch (err) {
       toast.error(err.message);
@@ -36,7 +36,7 @@ const Favourite = ({ home, onDelete }) => {
   return (
     <div className="flex flex-col h-full bg-white rounded-xl shadow-md border p-6 transition hover:-translate-y-1 hover:shadow-xl">
       <img
-        src={"https://www.cvent.com/sites/default/files/image/2021-08/exterior%20view%20of%20the%20sign%20at%20the%20front%20of%20a%20hotel.jpg"}
+        src={home.img?.url || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
         alt="Home image"
         className="w-full h-40 object-cover rounded-lg mb-4"
       />

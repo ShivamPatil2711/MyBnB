@@ -42,7 +42,7 @@ const HomeDetails = () => {
   useEffect(() => {
     const fetchHomeDetails = async () => {
       try {
-        const response = await fetch(`https://api-mybnb-noss.onrender.com/api/homes/${homeId}`, {
+        const response = await fetch(` https://api-mybnb-noss.onrender.com/api/homes/${homeId}`, {
           method: 'GET',
           credentials: 'include', // Include JWT cookie
         });
@@ -90,7 +90,7 @@ const HomeDetails = () => {
         {/* Image Section */}
         <div className="relative mb-8">
           <img
-            src="https://www.cvent.com/sites/default/files/image/2021-08/exterior%20view%20of%20the%20sign%20at%20the%20front%20of%20a%20hotel.jpg"
+            src={home.img?.url || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
             alt="Home image"
             className="w-full h-96 object-cover rounded-2xl"
           />

@@ -18,7 +18,7 @@ const HostHomes = () => {
 
     const fetchHomes = async () => {
       try {
-        const response = await fetch('https://api-mybnb-noss.onrender.com/api/host/host-homes', {
+        const response = await fetch(' https://api-mybnb-noss.onrender.com/api/host/host-homes', {
           method: 'GET',
           credentials: 'include', // Include JWT cookie
         });
@@ -37,7 +37,7 @@ const HostHomes = () => {
 
   const handleDeleteHome = async (homeId) => {
     try {
-      const response = await fetch(`https://api-mybnb-noss.onrender.com/api/host/deletehome/${homeId}`, {
+      const response = await fetch(` https://api-mybnb-noss.onrender.com/api/host/deletehome/${homeId}`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -73,7 +73,7 @@ const HostHomes = () => {
               className="bg-white text-red-700 w-auto rounded-2xl p-6 shadow-lg flex flex-col items-center border border-red-100 hover:shadow-2xl hover:border-red-300 transition"
             >
                <img
-        src={home.img || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
+        src={home.img?.url || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
         alt={home.housename}
         className="w-full h-40 object-cover rounded-lg mb-4 border-b-2 border-orange-500"
       />

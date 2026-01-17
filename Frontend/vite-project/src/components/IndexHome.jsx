@@ -18,7 +18,7 @@ const IndexHome = ({ home }) => {
   return (
     <div className="bg-white rounded-xl shadow-md border flex flex-col items-center p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
       <img
-        src={home.img || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
+        src={home.img?.url || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
         alt={home.housename}
         className="w-full h-40 object-cover rounded-lg mb-4 border-b-2 border-orange-500"
       />

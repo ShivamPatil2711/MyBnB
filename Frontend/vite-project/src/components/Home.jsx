@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from './AuthContext'; // Adjust path based on your project structure
+import { GoHeart } from "react-icons/go";
 const Home = ({ home }) => {
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Home = ({ home }) => {
     }
 
     try {
-      const response = await fetch('https://api-mybnb-noss.onrender.com/api/favourites', {
+      const response = await fetch(' https://api-mybnb-noss.onrender.com/api/favourites', {
         method: 'POST',
         credentials: 'include', // Include JWT cookie
         headers: {
@@ -24,8 +25,13 @@ const Home = ({ home }) => {
       });
 
       const data = await response.json();
-
+      console.log(data);
+if(!data.alreadyadded){
          toast.success(`Added ${home.housename} to favorites`);
+}
+else{
+  toast.info(`Already in favorites , ${home.housename}`);
+}
     } catch (err) {
       console.error('Error adding to favorites:', err);
       toast.error(err.message);
@@ -35,7 +41,7 @@ const Home = ({ home }) => {
  return (
     <div className="bg-white rounded-xl shadow-md border flex flex-col items-center p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
       <img
-        src={home.img || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
+src={home.img?.url || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
         alt={home.housename}
         className="w-full h-40 object-cover rounded-lg mb-4 border-b-2 border-orange-500"
       />

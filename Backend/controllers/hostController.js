@@ -2,21 +2,18 @@ const home = require('../models/home');
 const mongoose = require('mongoose');
 const user = require('../models/user');
 const multer = require('multer');
-const path = require('path');
 const booking =require('../models/booking');
-
-// Configure multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'Uploads/'); // Ensure folder exists and case matches filesystem
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}${path.extname(file.originalname)}`);
-  },
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
+require('dotenv').config();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -26,6 +23,22 @@ const upload = multer({
     }
   },
 }).single('img');
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'bnb-homes' },
+      (err, result) => {
+        if (result) resolve(result);
+        else reject(err);
+      }
+    );
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
+const deleteFromCloudinary = async (publicId) => {
+  if (!publicId) return;
+  await cloudinary.uploader.destroy(publicId);
+};
 
 exports.getAddHome = (req, res, next) => {
   try {
@@ -66,18 +79,25 @@ exports.postAddHome = [
       if (!housename || !location || !price || !rate || !des || !latitude || !longitude) {
         return res.status(400).json({ error: 'All fields are required' });
       }
-const imageUrl = `https://api-mybnb-noss.onrender.com/uploads/${req.file.filename}`;
+            const result = await uploadToCloudinary(req.file.buffer);
+            console.log('CLOUDINARY KEY:', process.env.CLOUDINARY_API_KEY);
+
+    console.log('Cloudinary upload result:', result.secure_url );
       const newHome = new home({
         housename,
         location,
       price: Number(price), // Explicit conversion
   rate: Number(rate),
         des,
-        img: imageUrl,
+img: {
+  url: result.secure_url,
+  public_id: result.public_id,
+},
         latitude,
         longitude,
         userId: req.user._id,
       });
+      
      const savedHome= await newHome.save();
        const currentUser = await user.findById(req.user._id);
     if (currentUser) {
@@ -148,7 +168,8 @@ exports.getEditHome = async (req, res, next) => {
   }
 };
 
-exports.postEditHome = async (req, res, next) => {
+exports.postEditHome = 
+  async (req, res, next) => {
   try {
     if (!req.isLoggedIn || !req.user) {
       return res.status(401).json({ error: 'Unauthorized, please log in' });
@@ -177,7 +198,8 @@ exports.postEditHome = async (req, res, next) => {
     console.error('Error in postEditHome:', error);
     res.status(500).json({ error: 'Server error' });
   }
-};
+}
+;
 
 exports.postDeleteHome = async (req, res, next) => {
   try {
@@ -190,11 +212,20 @@ exports.postDeleteHome = async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(homeId) || !mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-
-    const deletedHome = await home.deleteOne({ _id: homeId });
-    if (deletedHome.deletedCount === 0) {
+ // 🔥 1. Find home FIRST
+    const homeToDelete = await home.findById(homeId);
+    if (!homeToDelete) {
       return res.status(404).json({ error: 'Home not found' });
     }
+
+    // 🔥 2. Delete image from Cloudinary
+    if (homeToDelete.img?.public_id) {
+      await deleteFromCloudinary(homeToDelete.img.public_id);
+    }
+
+    // 🔥 3. Delete home from DB
+    await home.deleteOne({ _id: homeId });
+    
 
     await user.updateOne(
       { _id: userId },

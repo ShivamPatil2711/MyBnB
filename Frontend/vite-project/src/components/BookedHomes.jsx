@@ -7,7 +7,7 @@ const BookedHomes = () => {
     const fetchBookedHomes = async () => {
       try {
         const response = await fetch(
-          "https://api-mybnb-noss.onrender.com/api/host/booked-homes",
+          " https://api-mybnb-noss.onrender.com/api/host/booked-homes",
           {
             method: "GET",
             credentials: "include",
@@ -58,7 +58,7 @@ const BookedHomes = () => {
                 {/* Image */}
                 <div className="relative aspect-[5/3] overflow-hidden bg-gray-100">
                   <img
-                    src={booking.homeId.img}
+                    src={booking.homeId.img?.url || "https://www.cvent.com/sites/default/files/image/2021-08/default-home.jpg"}
                     alt={booking.homeId.housename}
                     className="h-full w-full object-cover "
                   />

@@ -108,30 +108,6 @@ exports.getHomesDetails = async (req, res, next) => {
   }
 };
 
-exports.postAddToFavourites = async (req, res, next) => {
-  try {
-    if (!req.isLoggedIn || !req.user) {
-      return res.status(401).json({ error: 'Unauthorized, please log in' });
-    }
-    const homeId = req.body.id;
-    const userId = req.user._id;
-    if (!mongoose.Types.ObjectId.isValid(homeId) || !mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ error: 'Invalid ID' });
-    }
-    const currentUser = await user.findById(userId);
-    if (!currentUser) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    if (!currentUser.favourites.includes(homeId)) {
-      currentUser.favourites.push(homeId);
-      await currentUser.save();
-    }
-      res.json({ message: 'Added to favorites', redirect: '/favourite-list' });
-  } catch (error) {
-    console.error('Error adding to favorites:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
 
 exports.postDeleteFavourites = async (req, res, next) => {
   try {
@@ -161,68 +137,131 @@ exports.postDeleteFavourites = async (req, res, next) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
-exports.postBooking = async (req, res, next) => {
+exports.postBooking = async (req, res) => {
   try {
+    // 🔐 Auth check
     if (!req.isLoggedIn || !req.user) {
       return res.status(401).json({ error: 'Unauthorized, please log in' });
     }
-    const homeId = req.body.homeId;
+
+    const { homeId, name, age, email, checkin, checkout } = req.body;
     const userId = req.user._id;
-    const { name, age, email, checkin, checkout } = req.body; // Removed phone from destructuring
-    if (!mongoose.Types.ObjectId.isValid(homeId) || !mongoose.Types.ObjectId.isValid(userId)) {
-      console.log("Invalid homeId or userId");
+
+    // 🔍 ID validation
+    if (
+      !mongoose.Types.ObjectId.isValid(homeId) ||
+      !mongoose.Types.ObjectId.isValid(userId)
+    ) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
-    
-    const currentUser = await user.findById(userId); // Fixed model name to User
+
+    // 🔍 Required fields
+    if (!checkin || !checkout) {
+      return res.status(400).json({
+        error: 'Check-in and check-out dates are required',
+      });
+    }
+
+    // 🔥 DATE VALIDATION
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const checkinDate = new Date(checkin);
+    const checkoutDate = new Date(checkout);
+
+    if (checkinDate <= today) {
+      return res.status(400).json({
+        error: 'Check-in date must be after today',
+      });
+    }
+
+    if (checkoutDate < checkinDate) {
+      return res.status(400).json({
+        error: 'Check-out must be after or equal to check-in',
+      });
+    }
+
+    // 🔍 Check user exists
+    const currentUser = await user.findById(userId);
     if (!currentUser) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const newbooking = new booking({ // Fixed model name to Booking
+    // 🔥 OVERLAP CHECK (MOST IMPORTANT PART)
+    const overlappingBooking = await booking.findOne({
+      homeId,
+      checkin: { $lt: checkoutDate },  // existing.checkin < new.checkout
+      checkout: { $gt: checkinDate },  // existing.checkout > new.checkin
+    });
+
+    if (overlappingBooking) {
+      return res.status(400).json({
+        error: 'Selected dates are already booked. Please choose different dates.',
+      });
+    }
+
+    // ✅ CREATE BOOKING
+    const newBooking = new booking({
       userId,
       homeId,
       name,
       age,
       email,
-       checkin,
-      checkout
+      checkin: checkinDate,
+      checkout: checkoutDate,
     });
-    const bookedHome = await newbooking.save(); // Fixed variable name to bookedHome
-    if (!bookedHome) {
-      return res.status(500).json({ error: 'Failed to create booking' });
-    }
-    res.status(201).json({ booking: bookedHome, message: 'Booking created successfully' }); // Updated to return bookedHome
+
+    const savedBooking = await newBooking.save();
+
+    res.status(201).json({
+      message: 'Booking created successfully',
+      booking: savedBooking,
+    });
+
   } catch (error) {
     console.error('Error creating booking:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-exports.postAddToFavourites = async (req, res, next) => {
+exports.postAddToFavourites = async (req, res) => {
   try {
     if (!req.isLoggedIn || !req.user) {
       return res.status(401).json({ error: 'Unauthorized, please log in' });
     }
+
     const homeId = req.body.id;
     const userId = req.user._id;
-    if (!mongoose.Types.ObjectId.isValid(homeId) || !mongoose.Types.ObjectId.isValid(userId)) {
+
+    if (
+      !mongoose.Types.ObjectId.isValid(homeId) ||
+      !mongoose.Types.ObjectId.isValid(userId)
+    ) {
       return res.status(400).json({ error: 'Invalid ID' });
     }
+
     const currentUser = await user.findById(userId);
     if (!currentUser) {
       return res.status(404).json({ error: 'User not found' });
     }
-    if (!currentUser.favourites.includes(homeId)) {
+
+    // 🔥 CHECK if already added
+    const alreadyAdded = currentUser.favourites.includes(homeId);
+
+    if (!alreadyAdded) {
       currentUser.favourites.push(homeId);
       await currentUser.save();
     }
-      res.json({ message: 'Added to favorites', redirect: '/favourite-list' });
-    } catch (error) {
-        console.error('Error adding to favorites:', error);
-        res.status(500).json({ error: 'Server error' });
-      }
-  };
+
+    res.json({
+          alreadyadded: alreadyAdded, // 👈 FRONTEND SIGNAL
+    });
+  } catch (error) {
+    console.error('Error adding to favourites:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 exports.postCancelBooking = async (req, res, next) => {
     try {
     if (!req.isLoggedIn || !req.user) {

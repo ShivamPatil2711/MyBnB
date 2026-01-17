@@ -17,9 +17,9 @@ const PORT = process.env.PORT ||4002;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 // CORS configuration for frontend at http://localhost:5173
 const allowedOrigins = [
-  'http://localhost:5173',                        // local dev
-  'https://eloquent-medovik-5dec79.netlify.app',
-  'https://my-bn-b.vercel.app',               // production frontend – exact match, no trailing slash
+  'http://localhost:5173', 
+  FRONTEND_URL                       // local dev
+              // production frontend – exact match, no trailing slash
   // Add preview branches if needed, e.g. 'https://my-bnb-tan-git-*.vercel.app'
 ];
 app.use(cors({ 
@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(rootDir, 'public')));
 app.use(express.json()); // Parse JSON bodies for API
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 
 
 // Authentication middleware to verify JWT
@@ -83,7 +83,6 @@ app.use((req, res, next) => {
     res.status(401).json({ error: 'Unauthorized, please log in' });
   }
 });
-app.use('/Uploads', express.static('Uploads'));
 app.use(hostrouter);
 
 // Error handling for 404
