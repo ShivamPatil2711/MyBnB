@@ -2,39 +2,43 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AuthContext } from './AuthContext'; // Adjust path based on your project structure
-import BookingForm from './BookingForm'; // Import the new BookingForm component
-
+import { AuthContext } from './AuthContext';
+import BookingForm from './BookingForm';
+import { FaStar } from 'react-icons/fa';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 const HomeDetails = () => {
   const { homeId } = useParams();
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const [home, setHome] = useState(null);
   const [host, setHost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showBookForm, setShowBookForm] = useState(false); // State to control modal visibility
+  const [showBookForm, setShowBookForm] = useState(false);
 
-  // Dummy reviews data
   const dummyReviews = [
     {
       id: 1,
       author: 'Anjali Sharma',
       rating: 5,
-      comment: 'Absolutely wonderful stay! The place was clean, cozy, and the host was very responsive.',
+      comment:
+        'Absolutely wonderful stay! The place was clean, cozy, and the host was very responsive.',
       date: 'July 15, 2025',
     },
     {
       id: 2,
       author: 'Rahul Verma',
       rating: 4,
-      comment: 'Great location and amenities. Had a minor issue with Wi-Fi, but overall a pleasant experience.',
+      comment:
+        'Great location and amenities. Had a minor issue with Wi-Fi, but overall a pleasant experience.',
       date: 'July 10, 2025',
     },
     {
       id: 3,
       author: 'Priya Desai',
       rating: 5,
-      comment: 'Loved the modern decor and the view! Perfect for a weekend getaway.',
+      comment:
+        'Loved the modern decor and the view! Perfect for a weekend getaway.',
       date: 'July 5, 2025',
     },
   ];
@@ -42,10 +46,17 @@ const HomeDetails = () => {
   useEffect(() => {
     const fetchHomeDetails = async () => {
       try {
-        const response = await fetch(`https://api-mybnb-noss.onrender.com/api/homes/${homeId}`, {
-          method: 'GET',
-          credentials: 'include', // Include JWT cookie
-        });
+        const response = await fetch(
+          `http://localhost:4003/api/homes/${homeId}`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch home details');
+        }
 
         const data = await response.json();
         setHome(data.home || null);
@@ -53,7 +64,7 @@ const HomeDetails = () => {
         setLoading(false);
       } catch (err) {
         setLoading(false);
-        toast.error(err.message);
+        toast.error(err.message || 'Error loading home details');
       }
     };
 
@@ -66,150 +77,234 @@ const HomeDetails = () => {
       navigate('/login-page');
       return;
     }
-    setShowBookForm(true); // Show the booking modal
+    setShowBookForm(true);
   };
 
   const handleCloseModal = () => {
-    setShowBookForm(false); // Close the booking modal
+    setShowBookForm(false);
+  };
+
+  const handleEmailHost = () => {
+    if (!host?.email) {
+      toast.error('Host email not available');
+      return;
+    }
+    const subject = encodeURIComponent(
+      `Inquiry about ${home?.housename || 'your property'}`
+    );
+    const body = encodeURIComponent(
+      `Hello ${host.FirstName || ''},\n\nI am interested in booking your property.\n\nThank you!`
+    );
+    window.location.href = `mailto:${host.email}?subject=${subject}&body=${body}`;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <p className="text-2xl font-semibold text-orange-600 animate-pulse">Loading home details...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-orange-600 rounded-full animate-spin" />
+          <p className="text-lg font-medium text-gray-600">
+            Loading property details...
+          </p>
+        </div>
       </div>
     );
   }
 
- // Validate latitude and longitude
-  const hasValidCoordinates = home.latitude && home.longitude && !isNaN(home.latitude) && !isNaN(home.longitude);
+  if (!home) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-xl font-semibold text-gray-600">
+          Property not found
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto relative">
-        {/* Image Section */}
-        <div className="relative mb-8">
-          <img
-            src="https://www.cvent.com/sites/default/files/image/2021-08/exterior%20view%20of%20the%20sign%20at%20the%20front%20of%20a%20hotel.jpg"
-            alt="Home image"
-            className="w-full h-96 object-cover rounded-2xl"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-2xl"></div>
-          <h1 className="absolute bottom-4 left-4 text-3xl font-bold text-white drop-shadow-lg">
-            {home.housename || 'N/A'}
-          </h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto px-6 lg:px-10 py-12 space-y-12">
+        {/* Hero */}
+        <div className="relative rounded-3xl overflow-hidden shadow-xl">
+       <div className=" w-full h-full  flex items-center justify-center">
+  <img
+    src={home.img?.url}
+    alt={home.housename}
+    className="max-h-full max-w-full object-contain"
+  />
+</div>
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute bottom-6 left-6 text-white space-y-2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
+              {home.housename}
+            </h1>
+        <div className="flex items-center gap-2 sm:gap-3 text-white text-base sm:text-lg md:text-xl mb-3 md:mb-4">
+  <FaMapMarkerAlt className="text-orange-500 text-lg sm:text-xl flex-shrink-0" />
+  <span className="font-medium truncate">
+    {home.city || 'Unknown City'}
+  </span>
+</div>
+
+          </div>
         </div>
 
-        {/* Details Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Property Details</h2>
-            <div className="space-y-3 text-gray-700">
-              <p>
-                <span className="font-medium">Housename:</span> {home.housename || 'N/A'}
-              </p>
-              <p>
-                <span className="font-medium">Location:</span> {home.location || 'N/A'}
-              </p>
-              <p>
-                <span className="font-medium">Price:</span> ₹{home.price?.toLocaleString() || 'N/A'}
-              </p>
-              <p>
-                <span className="font-medium">Description:</span> {home.des || 'No description available'}
-              </p>
-              <p>
-                <span className="font-medium">Longitude:</span> {home.longitude || 'No description available'}
-              </p>
-              <p>
-                <span className="font-medium">Latitude:</span> {home.latitude || 'No description available'}
-              </p>
-              <div className="flex items-center">
-                <span className="text-orange-500 mr-2">★</span>
-                <span className="font-medium">{home.rate ? `${home.rate}/5` : 'N/A'}</span>
+        {/* Main Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Left */}
+          <div className="lg:col-span-2 space-y-12">
+            {/* Property Details */}
+            <section className="bg-white rounded-2xl shadow-md p-10 space-y-6">
+              <h2 className="text-3xl font-bold text-gray-900">
+                Property Details
+              </h2>
+
+              <div className="space-y-6 text-gray-700">
+                <DetailRow label="House Name" value={home.housename} />
+                <DetailRow
+                  label="Address"
+                  value={`${home.street || ''}, ${home.city || ''}, ${home.pinCode}`}
+                />
+                <DetailRow
+                  label="Price"
+                  value={
+                    <span className="text-xl font-bold text-orange-600">
+                      ₹{home.price?.toLocaleString()} / night
+                    </span>
+                  }
+                />
+                <DetailRow
+                  label="Description"
+                  value={
+                    <p className="leading-relaxed text-gray-600">
+                      {home.des || 'No description available'}
+                    </p>
+                  }
+                />
+                <DetailRow
+                  label="Rating"
+                  value={
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar
+                          key={i}
+                          className={`text-xl ${
+                            i < Math.round(home.rate || 0)
+                              ? 'text-orange-500'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  }
+                />
               </div>
-            </div>
+            </section>
+
+            {/* Reviews */}
+            <section className="bg-white rounded-2xl shadow-md p-10 space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Guest Reviews
+              </h2>
+
+              <div className="space-y-8">
+                {dummyReviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="bg-gray-50 rounded-xl p-6 space-y-3 border-l-4 border-orange-500"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold text-gray-900">
+                        {review.author}
+                      </h4>
+                      <div className="flex gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar
+                            key={i}
+                            className={`${
+                              i < review.rating
+                                ? 'text-orange-500'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {review.comment}
+                    </p>
+                    <p className="text-sm text-gray-500">{review.date}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Host Information</h2>
-            <div className="space-y-3 text-gray-700">
-              <p>
-                <span className="font-medium">Host:</span> {host?.FirstName || 'N/A'} {host?.LastName || ''}
-              </p>
-              <p>
-                <span className="font-medium">Email:</span> {host?.email || 'N/A'}
-              </p>
-              <div className="mt-20">
+
+          {/* Right / Sidebar */}
+          <div className="space-y-8 lg:sticky lg:top-10">
+            <section className="bg-white rounded-2xl shadow-md p-8 space-y-6">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Host Information
+              </h2>
+
+              <div className="space-y-3 text-gray-700">
+                <p>
+                  <span className="font-semibold">Name:</span>{' '}
+                  {host?.FirstName} {host?.LastName}
+                </p>
+                <p>
+                  <span className="font-semibold">Email:</span>{' '}
+                  {host?.email}
+                </p>
+              </div>
+
+              <div className="space-y-4 pt-4">
                 <button
                   onClick={handleBookClick}
-                  className="bg-orange-500 text-white font-semibold  rounded-lg py-3 px-6 hover:bg-orange-600 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
+                  className="w-full bg-orange-600 text-white py-4 rounded-xl font-semibold hover:bg-orange-700 transition"
                 >
                   Book Now
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Map Section */}
-        {hasValidCoordinates ? (
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Location Map</h2>
-            <div className="h-96 w-full rounded-lg overflow-hidden border-2 border-gray-300">
-              <iframe
-                src={`https://www.google.com/maps?q=${home.latitude},${home.longitude}&z=15&output=embed`}
-                className="w-full h-full border-0"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Property Location"
-              ></iframe>
-            </div>
-          </div>
-        ) : (
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Location Map</h2>
-            <p className="text-gray-600">No valid location data available to display the map.</p>
-          </div>
-        )}
-
-        {/* Reviews Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Guest Reviews</h2>
-          <div className="space-y-6">
-            {dummyReviews.map((review) => (
-              <div key={review.id} className="border-l-4 border-orange-500 pl-4 py-2 bg-gray-50 rounded-lg">
-           <div className="flex items-center justify-between">
-              <p className="font-medium text-gray-800">{review.author}</p>
-         <div className="flex items-center">
-               {[...Array(review.rating)].map((_, i) => (
-            <span key={i} className="text-orange-500">★</span>
-                    ))}
-                </div>
-                </div>
-          <p className="text-gray-600 mt-1">{review.comment}</p>
-             <p className="text-sm text-gray-500 mt-1">{review.date}</p>
+                {host?.email && (
+                  <button
+                    onClick={handleEmailHost}
+                    className="w-full bg-gray-100 text-gray-800 py-4 rounded-xl font-semibold hover:bg-gray-200 transition"
+                  >
+                    Email Host
+                  </button>
+                )}
               </div>
-            ))}
+            </section>
           </div>
         </div>
 
         {/* Booking Modal */}
         {showBookForm && (
-          <div className="fixed inset-0  backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-full max-w-lg relative p-6">
               <button
                 onClick={handleCloseModal}
-                className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+                className="absolute top-4 right-4 text-2xl font-bold text-gray-600"
               >
-                ✕
+                ×
               </button>
               <BookingForm homeId={homeId} onClose={handleCloseModal} />
             </div>
-             </div>
-           )}
+          </div>
+        )}
       </div>
-            </div>
+    </div>
   );
 };
+
+const DetailRow = ({ label, value }) => (
+  <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+    <span className="font-semibold text-gray-800 min-w-[140px]">
+      {label}
+    </span>
+    <div className="text-gray-600">{value}</div>
+  </div>
+);
 
 export default HomeDetails;

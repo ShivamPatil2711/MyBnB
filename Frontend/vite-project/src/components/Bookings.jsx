@@ -22,7 +22,7 @@ const Bookings = () => {
       }
 
       try {
-        const response = await fetch('https://api-mybnb-noss.onrender.com/api/bookings', {
+        const response = await fetch(' http://localhost:4003/api/bookings', {
           method: 'GET',
           credentials: 'include', // Include JWT cookie
         });

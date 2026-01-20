@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('https://api-mybnb-noss.onrender.com/api/check-auth', {
+        const response = await fetch(' http://localhost:4003/api/check-auth', {
           method: 'GET',
           credentials: 'include',
         });

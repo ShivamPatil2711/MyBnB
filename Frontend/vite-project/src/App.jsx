@@ -10,7 +10,6 @@ import FavouriteList from "./components/FavouriteList";
 import HostHomes from "./components/HostHomes";
 import SignUp from "./components/SignUp";
 import Login from "./components/Login";
-import HomeList from "./components/HomeList";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./components/Index";
 import HomeDetails from "./components/HomeDetails";
@@ -32,14 +31,7 @@ function App() {
             </ProtectedRoute>
           ),
         },
-        {
-          path: "/homes",
-          element: (
-            <ProtectedRoute>
-              <HomeList />
-            </ProtectedRoute>
-          ),
-        },
+    
            {
           path: "/homedetails/:homeId",
           element: (

@@ -5,50 +5,52 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const errors = require('./controllers/errors');
-const userrouter  = require(path.join(__dirname, 'routes', 'userRouter'));
-const { hostrouter } = require(path.join(__dirname, 'routes', 'hostRouter'));
-const authrouter  = require(path.join(__dirname, 'routes', 'authrouter'));
-const rootDir = require('./utils/pathutil');
-require('dotenv').config(); 
+
+const userrouter = require('./routes/userRouter');
+const { hostrouter } = require('./routes/hostRouter');
+const authrouter = require('./routes/authrouter');
+
+require('dotenv').config();
+
 const app = express();
+
 const MONGODB_URL = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
-const PORT = process.env.PORT ||4002;
+const PORT = process.env.PORT || 4003;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-// CORS configuration for frontend at http://localhost:5173
+
+// 🔐 CORS CONFIG
 const allowedOrigins = [
-  'http://localhost:5173',                        // local dev
-  'https://eloquent-medovik-5dec79.netlify.app',
-  'https://my-bn-b.vercel.app',               // production frontend – exact match, no trailing slash
-  // Add preview branches if needed, e.g. 'https://my-bnb-tan-git-*.vercel.app'
+  'http://localhost:5173',
+  FRONTEND_URL,
 ];
-app.use(cors({ 
- origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, origin);  // reflect requesting origin
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'], credentials: true ,
-  optionsSuccessStatus: 204 
-}));
-// Explicitly handle preflight OPTIONS for all routes (fixes many Render issues)
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Postman / curl
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, origin);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
+
 app.options('*', cors());
-// Middleware for parsing cookies and request bodies
+
+// 🧩 Middlewares
 app.use(cookieParser());
-app.use(express.static(path.join(rootDir, 'public')));
-app.use(express.json()); // Parse JSON bodies for API
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-
-// Authentication middleware to verify JWT
+// 🔐 JWT middleware
 app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    return next();
-  }
+  if (req.method === 'OPTIONS') return next();
+
   const token = req.cookies.Usercookie;
   if (!token) {
     req.isLoggedIn = false;
@@ -64,40 +66,38 @@ app.use((req, res, next) => {
       email: decoded.email,
       userType: decoded.userType,
     };
-  } catch (error) {
+  } catch {
     req.isLoggedIn = false;
     req.user = null;
   }
+
   next();
 });
 
-// Public routes
+// 🌍 Public routes
 app.use(authrouter);
 app.use(userrouter);
 
-// Protected routes (require authentication)
+// 🔒 Protected routes
 app.use((req, res, next) => {
-  if (req.isLoggedIn) {
-    next();
-  } else {
-    res.status(401).json({ error: 'Unauthorized, please log in' });
-  }
+  if (req.isLoggedIn) return next();
+  return res.status(401).json({ error: 'Unauthorized, please log in' });
 });
-app.use('/Uploads', express.static('Uploads'));
+
 app.use(hostrouter);
 
-// Error handling for 404
+// ❌ 404
 app.use(errors.error404);
 
-// MongoDB connection and server startup
+// 🚀 Start server
 mongoose
   .connect(MONGODB_URL)
   .then(() => {
     console.log('Connected to Mongo');
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-   console.error('ERROR OCCURRED', err);
+    console.error('Mongo connection error:', err);
   });

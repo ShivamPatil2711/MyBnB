@@ -7,117 +7,20 @@ import { AuthContext } from './AuthContext';
 const HostAddHome = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
-  const mapRef = useRef(null);
-  const searchRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
-  const [autocomplete, setAutocomplete] = useState(null);
-  const [coordinates, setCoordinates] = useState({ lat: 20.0, lng: 77.0 });
+
   const [formData, setFormData] = useState({
     housename: '',
-    location: '',
+    street: '',
+    city: '',
+    pinCode: '',
     price: '',
-    rate: '',
     img: null,
     des: '',
-    latitude: 20.0,
-    longitude: 77.0,
   });
+
   const [loading, setLoading] = useState(false);
-  const imgUrlRef = useRef(null); // Track object URL for image preview cleanup
+  const imgUrlRef = useRef(null);
 
-  // Initialize Google Map
-  useEffect(() => {
-    const initMap = () => {
-      if (window.google && mapRef.current) {
-        const initial = { lat: 20.0, lng: 77.0 };
-        
-        const newMap = new window.google.maps.Map(mapRef.current, {
-          center: initial,
-          zoom: 10,
-        });
-
-        const newMarker = new window.google.maps.Marker({
-          position: initial,
-          map: newMap,
-          draggable: true,
-          title: 'Drag me or click on the map!',
-        });
-
-        // Initialize Autocomplete
-        if (searchRef.current) {
-          const newAutocomplete = new window.google.maps.places.Autocomplete(searchRef.current);
-          newAutocomplete.bindTo('bounds', newMap);
-          
-          newAutocomplete.addListener('place_changed', () => {
-            const place = newAutocomplete.getPlace();
-            if (!place.geometry || !place.geometry.location) {
-              return;
-            }
-
-            // Update map center and marker position
-            newMap.setCenter(place.geometry.location);
-            newMap.setZoom(15);
-            newMarker.setPosition(place.geometry.location);
-            
-            const newCoords = {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            };
-            setCoordinates(newCoords);
-            setFormData((prev) => ({
-              ...prev,
-              latitude: newCoords.lat,
-              longitude: newCoords.lng,
-            }));
-          });
-          
-          setAutocomplete(newAutocomplete);
-        }
-
-        // Click to move marker
-        newMap.addListener('click', (e) => {
-          newMarker.setPosition(e.latLng);
-          const newCoords = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-          setCoordinates(newCoords);
-          setFormData((prev) => ({
-            ...prev,
-            latitude: newCoords.lat,
-            longitude: newCoords.lng,
-          }));
-        });
-
-        // Drag to move marker
-        newMarker.addListener('dragend', () => {
-          const p = newMarker.getPosition();
-          const newCoords = { lat: p.lat(), lng: p.lng() };
-          setCoordinates(newCoords);
-          setFormData((prev) => ({
-            ...prev,
-            latitude: newCoords.lat,
-            longitude: newCoords.lng,
-          }));
-        });
-
-        setMap(newMap);
-        setMarker(newMarker);
-      }
-    };
-
-    // Load Google Maps script if not already loaded
-    if (!window.google) {
-      const script = document.createElement('script');
-      script.src =import.meta.env.REACT_APP_API_URL; //*********/////
-      script.async = true;
-      script.defer = true;
-      window.initGoogleMap = initMap;
-      document.head.appendChild(script);
-    } else {
-      initMap();
-    }
-  }, []);
-
-  // Cleanup object URL for image preview on unmount or new file selection
   useEffect(() => {
     return () => {
       if (imgUrlRef.current) {
@@ -135,23 +38,19 @@ const HostAddHome = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
-        e.target.value = ''; // Clear input
+        toast.error('Please select a valid image file');
+        e.target.value = '';
         return;
       }
-      // Validate file size (5MB limit to match backend)
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size must be less than 5MB');
-        e.target.value = ''; // Clear input
+        e.target.value = '';
         return;
       }
-      // Revoke previous object URL if exists
       if (imgUrlRef.current) {
         URL.revokeObjectURL(imgUrlRef.current);
       }
-      // Create new object URL for preview
       imgUrlRef.current = URL.createObjectURL(file);
       setFormData((prev) => ({ ...prev, img: file }));
     }
@@ -164,8 +63,9 @@ const HostAddHome = () => {
       navigate('/login-page');
       return;
     }
-    if (!formData.housename || !formData.location || !formData.price || 
-        !formData.rate || !formData.des || !formData.img) {
+
+    const { housename, street, city, pinCode, price, des, img } = formData;
+    if (!housename || !street || !city || !pinCode || !price || !des || !img) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -173,23 +73,21 @@ const HostAddHome = () => {
     setLoading(true);
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('housename', formData.housename);
-      formDataToSend.append('location', formData.location);
-      formDataToSend.append('price', formData.price);
-      formDataToSend.append('rate', formData.rate);
-      formDataToSend.append('des', formData.des);
-      formDataToSend.append('img', formData.img);
-      formDataToSend.append('latitude', formData.latitude);
-      formDataToSend.append('longitude', formData.longitude);
+      formDataToSend.append('housename', housename);
+      formDataToSend.append('street', street);
+      formDataToSend.append('city', city);
+      formDataToSend.append('pinCode', pinCode);
+      formDataToSend.append('price', price);
+      formDataToSend.append('des', des);
+      formDataToSend.append('img', img);
 
-      const response = await fetch('https://api-mybnb-noss.onrender.com/api/host/airbnb-home', {
+      await fetch('http://localhost:4003/api/host/airbnb-home', {
         method: 'POST',
         credentials: 'include',
         body: formDataToSend,
       });
 
-      const data = await response.json();
-          toast.success('Home added successfully');
+      toast.success('Home added successfully');
       navigate('/host/host-homes');
     } catch (err) {
       toast.error(err.message);
@@ -200,139 +98,111 @@ const HostAddHome = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <p className="text-red-700 text-xl font-medium">Submitting...</p>
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-600 font-bold text-xl animate-pulse">Submitting...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-8">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl text-center border border-red-100">
-        <h1 className="text-2xl font-bold text-red-700 mb-6">Register Your Home</h1>
-        
-        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-transparent to-gray-100 backdrop-blur-sm p-6">
+      <div className="max-w-3xl w-full bg-white/40 backdrop-blur-lg border border-white/30 rounded-3xl p-8 shadow-xl">
+        <h1 className="text-3xl font-bold text-red-600 text-center mb-6">Register Your Home</h1>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Home Name */}
           <div>
-            <label for="housename" className="block font-semibold text-red-700 mb-1">
-              Housename:
-            </label>
+            <label className="block text-red-700 font-semibold mb-1">Home Name</label>
             <input
               type="text"
-              id="housename"
               name="housename"
-              placeholder="Enter your housename"
               value={formData.housename}
               onChange={handleChange}
+              className="w-full px-5 py-3 rounded-xl border border-red-300 focus:ring-2 focus:ring-red-400"
+              placeholder="Enter your home name"
               required
-              className="w-full px-4 py-2 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-            />
-          </div>
-          
-          <div>
-            <label for="location" className="block font-semibold text-red-700 mb-1">
-              Location:
-            </label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              placeholder="Enter location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
             />
           </div>
 
-          {/* Map Section */}
-          <div>
-            <label className="block font-semibold text-red-700 mb-1">
-              Pin Your Exact Location:
-            </label>
-            
-            {/* Search Input */}
-            <input
-              ref={searchRef}
-              type="text"
-              placeholder="Search for a place..."
-              className="w-full px-4 py-2 mb-2 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-            />
-            
-            <div 
-              ref={mapRef} 
-              style={{ width: '100%', height: '400px', border: '1px solid #ccc', borderRadius: '8px' }}
-            ></div>
-            <div className="mt-2 text-sm text-gray-600">
-              Latitude: <span className="font-mono">{coordinates.lat.toFixed(5)}</span>, 
-              Longitude: <span className="font-mono">{coordinates.lng.toFixed(5)}</span>
+          {/* Address Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-red-700 font-semibold mb-1">Street Name</label>
+              <input
+                type="text"
+                name="street"
+                value={formData.street}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-400"
+                placeholder="Street Name"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-red-700 font-semibold mb-1">City</label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-400"
+                placeholder="City"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-red-700 font-semibold mb-1">Pin Code</label>
+              <input
+                type="text"
+                name="pinCode"
+                value={formData.pinCode}
+                onChange={handleChange}
+                className="w-full px-4 py-2 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-400"
+                placeholder="Pin Code"
+                required
+              />
             </div>
           </div>
-          
+
+          {/* Price */}
           <div>
-            <label htmlFor="price" className="block font-semibold text-red-700 mb-1">
-              Price:
-            </label>
+            <label className="block text-red-700 font-semibold mb-1">Price (₹)</label>
             <input
-                type="text"
-              inputMode="decimal"
-              pattern="[0-9]*"     // Only allows digits
-              id="price"
+              type="text"
               name="price"
-              placeholder="Enter price"
               value={formData.price}
               onChange={handleChange}
+              className="w-full px-4 py-2 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-400"
+              placeholder="Enter price"
               required
-              min="0"
-              className="w-full px-4 py-2 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
             />
           </div>
-          
+
+                   {/* Description */}
           <div>
-            <label htmlFor="rate" className="block font-semibold text-red-700 mb-1">
-              Rating:
-            </label>
-            <input
-              type="number"
-              id="rate"
-              name="rate"
-              placeholder="Enter rating"
-              value={formData.rate}
-              onChange={handleChange}
-              min="0"
-              max="5"
-              step="0.1"
-              required
-              className="w-full px-4 py-2 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="des" className="block font-semibold text-red-700 mb-1">
-              Description:
-            </label>
+            <label className="block text-red-700 font-semibold mb-1">Description</label>
             <textarea
-              id="des"
               name="des"
-              placeholder="Enter description"
               value={formData.des}
               onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-400 resize-y"
+              placeholder="Describe your home"
               required
-              className="w-full px-4 py-2 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition min-h-[80px] resize-y"
             />
           </div>
-          
+
+          {/* Image Upload */}
           <div>
-            <label htmlFor="img" className="block font-semibold text-red-700 mb-1">
-              Image:
-            </label>
+            <label className="block text-red-700 font-semibold mb-1">Upload Image</label>
             <input
               type="file"
-              id="img"
-              name="img"
-              onChange={handleFileChange}
-              required
               accept="image/*"
-              className="w-full px-4 py-2 border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+              onChange={handleFileChange}
+              className="block w-full text-sm text-gray-700 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold
+              file:bg-red-200 file:text-red-800 hover:file:bg-red-300"
+              required
             />
             {formData.img && (
               <div className="mt-2">
@@ -340,15 +210,16 @@ const HostAddHome = () => {
                 <img
                   src={imgUrlRef.current}
                   alt="Preview"
-                  className="mt-2 max-h-40 rounded-lg object-cover"
+                  className="mt-2 h-36 rounded-lg object-cover border border-gray-200"
                 />
               </div>
             )}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 bg-red-500 text-white rounded-lg font-semibold transition mt-2 hover:bg-red-600"
+            className="w-full py-3 bg-red-600 text-white font-bold rounded-2xl hover:bg-red-700 transition"
           >
             Submit
           </button>

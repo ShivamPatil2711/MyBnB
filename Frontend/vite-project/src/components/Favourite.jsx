@@ -2,11 +2,13 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AuthContext } from './AuthContext'; // Adjust path based on your project structure
+import { AuthContext } from './AuthContext';
+import { FaStar, FaMapMarkerAlt } from 'react-icons/fa';
 
 const Favourite = ({ home, onDelete }) => {
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+
   const handleDeleteFavourite = async () => {
     if (!isLoggedIn) {
       toast.error('Please log in to remove from favorites');
@@ -15,9 +17,9 @@ const Favourite = ({ home, onDelete }) => {
     }
 
     try {
-      const response = await fetch('https://api-mybnb-noss.onrender.com/api/deletefavourite', {
+      const response = await fetch('http://localhost:4003/api/deletefavourite', {
         method: 'POST',
-        credentials: 'include', // Include JWT cookie
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -26,41 +28,62 @@ const Favourite = ({ home, onDelete }) => {
 
       const data = await response.json();
 
-        toast.success(`Removed ${home.housename || 'home'} from favorites`);
-      onDelete(home._id); // Call onDelete to update parent state
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to remove favorite');
+      }
+
+      toast.success(`Removed ${home.housename || 'this home'} from favorites`);
+      onDelete(home._id); // Update parent list
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || 'Error removing from favorites');
     }
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl shadow-md border p-6 transition hover:-translate-y-1 hover:shadow-xl">
-      <img
-        src={"https://www.cvent.com/sites/default/files/image/2021-08/exterior%20view%20of%20the%20sign%20at%20the%20front%20of%20a%20hotel.jpg"}
-        alt="Home image"
-        className="w-full h-40 object-cover rounded-lg mb-4"
-      />
-  
-      <div className="text-orange-700 text-base flex-1 flex flex-col">
-        <p className="mb-1"><span className="font-semibold">Housename:</span> {home.housename}</p>
-        <p className="mb-1"><span className="font-semibold">Location:</span> {home.location}</p>
-        <p className="mb-1"><span className="font-semibold">Price:</span> ₹{home.price}</p>
-        <p className="mb-1"><span className="font-semibold">Description:</span> {home.des}</p>
+    <div className="group bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 transition-all duration-300 h hover:-translate-y-1">
+      <div className="relative">
+        <img
+          src={home.img?.url || 'https://via.placeholder.com/400x240?text=Property'}
+          alt={home.housename || 'Favorite property'}
+          className="w-full h-48 object-cover "
+        />
+
+        {/* Rating badge – same as IndexHome */}
+        <div className="absolute top-3 left-3 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center shadow-md">
+          <FaStar className="mr-1 text-white" /> 4.0
+        </div>
       </div>
-  
-      <div className="mt-auto flex justify-between items-center pt-4 ">
-        <Link
-          to={`/homedetails/${home._id}`}
-          className="bg-orange-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition"
-        >
-          Details
-        </Link>
-        <button
-          className="bg-gray-200 text-orange-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition"
-          onClick={handleDeleteFavourite}
-        >
-          Delete Favourite
-        </button>
+
+      <div className="p-5">
+        <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1 ">
+          {home.housename || 'Unnamed Property'}
+        </h3>
+
+        <div className="flex items-center text-gray-600 text-sm mb-3">
+          <FaMapMarkerAlt className="mr-1.5 text-orange-500 flex-shrink-0" />
+          <span className="truncate">{home.city ||  'Unknown City'}</span>
+        </div>
+
+        <div className="text-xl font-bold text-orange-600 mb-4">
+          ₹{home.price?.toLocaleString() || '—'}
+          <span className="text-sm text-gray-500"> / night</span>
+        </div>
+
+        <div className="flex gap-4">
+          <Link
+            to={`/homedetails/${home._id}`}
+            className="flex-1 bg-orange-600 text-white text-center py-3 rounded-xl font-medium hover:bg-orange-700 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+          >
+            See Details
+          </Link>
+
+          <button
+            onClick={handleDeleteFavourite}
+            className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+          >
+            Remove Favorite
+          </button>
+        </div>
       </div>
     </div>
   );
