@@ -8,6 +8,7 @@ import { FaStar, FaMapMarkerAlt } from 'react-icons/fa';
 const Favourite = ({ home, onDelete }) => {
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   const handleDeleteFavourite = async () => {
     if (!isLoggedIn) {
@@ -17,7 +18,7 @@ const Favourite = ({ home, onDelete }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:4003/api/deletefavourite', {
+      const response = await fetch(`${backendApiUrl}/api/deletefavourite`, {
         method: 'POST',
         credentials: 'include',
         headers: {

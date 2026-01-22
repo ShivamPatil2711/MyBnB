@@ -8,6 +8,7 @@ const HostEditHome = () => {
   const { homeId } = useParams();
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   const [formData, setFormData] = useState({
     housename: '',
@@ -33,7 +34,7 @@ const HostEditHome = () => {
 
     const fetchHomeDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:4003/api/homes/${homeId}`, {
+        const response = await fetch(`${backendApiUrl}/api/homes/${homeId}`, {
           method: 'GET',
           credentials: 'include',
         });

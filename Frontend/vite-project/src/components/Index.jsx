@@ -49,8 +49,8 @@ const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:
 
     try {
       const url = isAlreadyFav
-        ? 'http://localhost:4003/api/deletefavourite'
-        : 'http://localhost:4003/api/favourites';
+        ? `${backendApiUrl}/api/deletefavourite`
+        : `${backendApiUrl}/api/favourites`;
 
       const response = await fetch(url, {
         method: 'POST',
