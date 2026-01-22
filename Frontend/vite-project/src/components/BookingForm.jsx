@@ -6,6 +6,7 @@ import { AuthContext } from './AuthContext';
 const BookingForm = ({ homeId, onClose }) => {
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   const [formData, setFormData] = useState({
     name: '',
@@ -56,7 +57,7 @@ const BookingForm = ({ homeId, onClose }) => {
 
     // ✅ ONLY IF VALID → CALL BACKEND
     try {
-      const response = await fetch('http://localhost:4003/api/bookings', {
+      const response = await fetch(`${backendApiUrl}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

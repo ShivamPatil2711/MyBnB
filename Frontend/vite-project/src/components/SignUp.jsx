@@ -18,6 +18,7 @@ const SignUp = () => {
   const [errorMessages, setErrorMessages] = useState([]);
   const [showErrors, setShowErrors] = useState(false);
   const navigate = useNavigate();
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -30,7 +31,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(' http://localhost:4003/api/signup', {
+      const response = await fetch(`${backendApiUrl}/api/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

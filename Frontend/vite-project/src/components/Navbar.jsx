@@ -12,6 +12,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   const commonClasses = 'text-sm sm:text-base font-medium px-3 py-1.5 rounded-lg transition-colors duration-200';
   const activeClasses = `${commonClasses} bg-white text-orange-600 ring-2 ring-white/80`;
@@ -40,7 +41,7 @@ const Navbar = () => {
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:4003/api/logout', {
+      const response = await fetch(`${backendApiUrl}/api/logout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

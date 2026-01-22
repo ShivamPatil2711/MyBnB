@@ -6,11 +6,11 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(' http://localhost:4003/api/check-auth', {
+        const response = await fetch(`${backendApiUrl}/api/check-auth`, {
           method: 'GET',
           credentials: 'include',
         });

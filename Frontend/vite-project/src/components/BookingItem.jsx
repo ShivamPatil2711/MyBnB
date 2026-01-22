@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
 const BookingItem = ({ booking, onDelete }) => {
-
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -15,7 +15,7 @@ const BookingItem = ({ booking, onDelete }) => {
 
   const cancelBooking = async (booking_id) => {
     try {
-      const response = await fetch(`http://localhost:4003/api/cancelbooking/${booking_id}`, {
+      const response = await fetch(`${backendApiUrl}/api/cancelbooking/${booking_id}`, {
         method: "POST",
         credentials: "include",
         headers: {

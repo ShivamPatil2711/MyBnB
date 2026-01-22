@@ -7,6 +7,8 @@ const FavouriteList = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const [favouriteHomes, setFavouriteHomes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
+
   useEffect(() => {
     const fetchFavourites = async () => {
       if (!isLoggedIn) {
@@ -14,7 +16,7 @@ const FavouriteList = () => {
         return;
       }
       try {
-        const res = await fetch(' http://localhost:4003/api/favourite-list', {
+        const res = await fetch(`${backendApiUrl}/api/favourite-list`, {
           method: 'GET',
           credentials: 'include',
         });

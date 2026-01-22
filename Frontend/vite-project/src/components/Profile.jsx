@@ -9,11 +9,12 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { setIsLoggedIn, setUser: setAuthUser } = useContext(AuthContext);
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:4003/api/logout", {
+      const response = await fetch(`${backendApiUrl}/api/logout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -38,7 +39,7 @@ const Profile = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await fetch("http://localhost:4003/api/profile", {
+        const response = await fetch(`${backendApiUrl}/api/profile`, {
           method: "GET",
           credentials: "include",
         });

@@ -7,6 +7,7 @@ import { AuthContext } from './AuthContext';
 const HostAddHome = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   const [formData, setFormData] = useState({
     housename: '',
@@ -81,7 +82,7 @@ const HostAddHome = () => {
       formDataToSend.append('des', des);
       formDataToSend.append('img', img);
 
-      await fetch('http://localhost:4003/api/host/airbnb-home', {
+      await fetch(`${backendApiUrl}/api/host/airbnb-home`, {
         method: 'POST',
         credentials: 'include',
         body: formDataToSend,

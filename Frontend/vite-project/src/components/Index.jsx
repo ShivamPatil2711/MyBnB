@@ -9,11 +9,12 @@ const Index = () => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   useEffect(() => {
     const fetchHomes = async () => {
       try {
-        const response = await fetch('http://localhost:4003/api/homes', {
+        const response = await fetch(`${backendApiUrl}/api/homes`, {
           method: 'GET',
           credentials: 'include',
           headers: {

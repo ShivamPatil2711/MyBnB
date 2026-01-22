@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 
 const BookedHomes = () => {
   const [bookedHomes, setBookedHomes] = useState([]);
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   useEffect(() => {
     const fetchBookedHomes = async () => {
       try {
-        const response = await fetch("http://localhost:4003/api/host/booked-homes", {
+        const response = await fetch(`${backendApiUrl}/api/host/booked-homes`, {
           method: "GET",
           credentials: "include",
         });

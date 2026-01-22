@@ -15,39 +15,16 @@ const HomeDetails = () => {
   const [host, setHost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showBookForm, setShowBookForm] = useState(false);
-
-  const dummyReviews = [
-    {
-      id: 1,
-      author: 'Anjali Sharma',
-      rating: 5,
-      comment:
-        'Absolutely wonderful stay! The place was clean, cozy, and the host was very responsive.',
-      date: 'July 15, 2025',
-    },
-    {
-      id: 2,
-      author: 'Rahul Verma',
-      rating: 4,
-      comment:
-        'Great location and amenities. Had a minor issue with Wi-Fi, but overall a pleasant experience.',
-      date: 'July 10, 2025',
-    },
-    {
-      id: 3,
-      author: 'Priya Desai',
-      rating: 5,
-      comment:
-        'Loved the modern decor and the view! Perfect for a weekend getaway.',
-      date: 'July 5, 2025',
-    },
-  ];
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
+const [dummyReviews,setdummyReviews]=useState([]);
+  
+  
 
   useEffect(() => {
     const fetchHomeDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:4003/api/homes/${homeId}`,
+          `${backendApiUrl}/api/homes/${homeId}`,
           {
             method: 'GET',
             credentials: 'include',
@@ -61,13 +38,14 @@ const HomeDetails = () => {
         const data = await response.json();
         setHome(data.home || null);
         setHost(data.host || null);
+        setdummyReviews(data.reviews || []);
         setLoading(false);
       } catch (err) {
         setLoading(false);
         toast.error(err.message || 'Error loading home details');
       }
     };
-
+    
     fetchHomeDetails();
   }, [homeId]);
 
@@ -208,35 +186,43 @@ const HomeDetails = () => {
               </h2>
 
               <div className="space-y-8">
-                {dummyReviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="bg-gray-50 rounded-xl p-6 space-y-3 border-l-4 border-orange-500"
-                  >
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-gray-900">
-                        {review.author}
-                      </h4>
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar
-                            key={i}
-                            className={`${
-                              i < review.rating
-                                ? 'text-orange-500'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {review.comment}
-                    </p>
-                    <p className="text-sm text-gray-500">{review.date}</p>
-                  </div>
-                ))}
-              </div>
+  {dummyReviews.map((review) => (
+    <div
+      className="bg-gray-50 rounded-xl p-6 space-y-3 border-l-4 border-orange-500 overflow-hidden"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <h4 className="font-semibold text-gray-900 truncate">
+          {review.guestName||  'Anonymous'}
+        </h4>
+        <div className="flex gap-1 flex-shrink-0">
+          {[...Array(5)].map((_, i) => (
+            <FaStar
+              key={i}
+              className={`${
+                i < review.rating ? 'text-orange-500' : 'text-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* FIXED SECTION BELOW */}
+      <p className="text-gray-700 leading-relaxed break-words whitespace-pre-wrap">
+        {review.comment}
+      </p>
+      
+     <p className="text-sm text-gray-500">
+  {review.date 
+    ? new Date(review.date).toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })
+    : 'No date provided'}
+</p>
+    </div>
+  ))}
+</div>
             </section>
           </div>
 

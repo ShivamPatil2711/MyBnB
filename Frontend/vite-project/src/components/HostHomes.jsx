@@ -12,6 +12,7 @@ const HostHomes = () => {
   const [homes, setHomes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -25,7 +26,7 @@ const HostHomes = () => {
       setError(null);
 
       try {
-        const response = await fetch('http://localhost:4003/api/host/host-homes', {
+        const response = await fetch(`${backendApiUrl}/api/host/host-homes`, {
           method: 'GET',
           credentials: 'include',
           headers: {

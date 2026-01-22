@@ -12,6 +12,8 @@ const Bookings = () => {
   const [currentBooking, setCurrentBooking] = useState([]);
   const [pastBooking, setPastBooking] = useState([]);
   const [view, setView] = useState("current"); // "current" or "past"
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:4003';
+
    const onDelete = (bookingId) => {
     {/*setBookings((prevBookings) =>
       prevBookings.filter((booking) => booking._id !== bookingId)
@@ -22,7 +24,7 @@ const Bookings = () => {
   }
   const handleReviewSubmit = async (booking) => {
     try {
-      const response = await fetch('http://localhost:4003/api/reviews', {
+      const response = await fetch(`${backendApiUrl}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,7 +70,7 @@ const Bookings = () => {
       }
 
     try {
-        const response = await fetch(' http://localhost:4003/api/bookings', {
+        const response = await fetch(`${backendApiUrl}/api/bookings`, {
           method: 'GET',
           credentials: 'include', // Include JWT cookie
         });

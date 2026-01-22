@@ -84,6 +84,21 @@ exports.getHomesDetails = async (req, res, next) => {
     }
     const homeDetail = await home.findById(homeId);
     const host = await user.findById(homeDetail.userId);
+   const bookings = await booking.find({
+  homeId: new ObjectId(homeId),
+  "reviews": { $exists: true }
+})
+.populate("userId") 
+.select("reviews date userId -_id");
+
+// Transform the results so the frontend gets a clean array
+const cleanReviews = bookings.map(b => ({
+  rating: b.reviews.rating,
+  comment: b.reviews.comment,
+  guestName:  b.userId.FirstName+' '+b.userId.LastName , 
+  date: b.date
+  // If populate fails or user is deleted, it defaults to 'Anonymous Guest'
+}));
     if (!host) {
     }
     if (!homeDetail) {
@@ -96,6 +111,7 @@ exports.getHomesDetails = async (req, res, next) => {
        
       },
       host: host,
+      reviews: cleanReviews,
       isLoggedIn: req.isLoggedIn,
       user: req.user || {},
     });

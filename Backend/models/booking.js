@@ -11,6 +11,7 @@ const BookingSchema = mongoose.Schema({
     rating: Number,
     comment: String,
   },
+  date: { type: Date, default: Date.now },
   homeId: { type: mongoose.Schema.Types.ObjectId, ref: "Home", required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Changed from 'us' to 'userId'
 });
