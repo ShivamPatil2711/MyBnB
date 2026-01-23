@@ -103,7 +103,7 @@ const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:
       formDataToSend.append('img', imageFile);
     }
     const response = await fetch(
-      'http://localhost:4003/api/host/edithome',
+      `${backendApiUrl}/api/host/edithome`,
       {
         method: 'POST',
         credentials: 'include',
