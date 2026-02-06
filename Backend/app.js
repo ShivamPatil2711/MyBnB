@@ -17,7 +17,7 @@ const app = express();
 const MONGODB_URL = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = process.env.PORT || 4003;
-const FRONTEND_URL = process.env.FRONTEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 // 🔐 CORS CONFIG
 const allowedOrigins = [

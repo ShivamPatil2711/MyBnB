@@ -32,7 +32,7 @@ const Login = () => {
         setUser(data.user);
         setEmail('');
         setPassword('');
-        data.user.userType==='guest' ? navigate('/') : navigate('/host/host-homes');
+        navigate('/') 
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Login failed');
@@ -43,7 +43,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-8 text-center border-b border-gray-100">

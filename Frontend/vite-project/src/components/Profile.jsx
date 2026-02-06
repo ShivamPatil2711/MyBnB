@@ -114,7 +114,7 @@ const Profile = () => {
               </button>
 
               <button
-                onClick={() => navigate("/host/host-homes")}
+                onClick={() =>navigate("/")}
                 className="w-full sm:w-auto flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
                 Go Home

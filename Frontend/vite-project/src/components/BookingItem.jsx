@@ -1,11 +1,10 @@
-import React from 'react';
+import React, {  useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
 const BookingItem = ({ booking, onDelete }) => {
-  const navigate = useNavigate();
 
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {

@@ -23,8 +23,8 @@ const Navbar = () => {
   ];
 
   const hostLinks = [
-    { to: '/host/host-homes', label: 'Host Homes' },
     { to: '/host/airbnb-home', label: 'Add Home' },
+    { to: '/host/host-homes', label: 'Host Homes' },
     { to: '/host/booked-homes', label: 'Booked Homes' },
   ];
 
@@ -40,7 +40,7 @@ const Navbar = () => {
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:4002/api/logout', {
+      const response = await fetch('http://localhost:4003/api/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -71,14 +71,14 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-4">
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-4">
-          {(!user || user.userType === 'guest') && (
+         
             <NavLink
               to="/"
               className={({ isActive }) => (isActive ? activeClasses : inactiveClasses)}
             >
               Index
             </NavLink>
-          )}
+       
 
           {isLoggedIn && user?.userType === 'guest' &&
             guestLinks.map(({ to, label }) => (
@@ -127,17 +127,28 @@ const Navbar = () => {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden text-3xl focus:outline-none focus:ring-2 focus:ring-white/50 rounded-full p-1"
+          className="md:hidden  text-3xl "
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle navigation menu"
         >
           {isOpen ? <RxCross2 /> : <RxHamburgerMenu />}
         </button>
+         <div className='md:hidden'> 
+            <Link
+              to="/profile"
+              onClick={() => setIsOpen(false)}
+              className={`flex items-center gap-3 text-lg font-medium transition-colors ${isProfileActive ? 'text-orange-200' : 'hover:text-orange-200'}`}
+            >
+              <CgProfile className={`text-3xl ${isProfileActive ? 'bg-white text-orange-600 rounded-full p-1' : ''}`} />
+            </Link>
+
+           
+          </div>
       </div>
 
       {/* Mobile Menu */}
-      <div className={`${isOpen ? 'block' : 'hidden'} md:hidden bg-orange-600 px-5 py-4 space-y-3`}>
-        {(!user || user.userType === 'guest') && (
+      <div className={`${isOpen ? 'flex' : 'hidden'}   flex-col md:hidden bg-orange-600 px-5 py-4 space-y-3`}>
+       
           <NavLink
             to="/"
             onClick={() => setIsOpen(false)}
@@ -145,7 +156,7 @@ const Navbar = () => {
           >
             Index
           </NavLink>
-        )}
+      
 
         {isLoggedIn && user?.userType === 'guest' &&
           guestLinks.map(({ to, label }) => (
@@ -171,7 +182,7 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-        {!isLoggedIn ? (
+      {!isLoggedIn && (
           <>
             <NavLink
               to="/signup"
@@ -188,28 +199,9 @@ const Navbar = () => {
               Login
             </NavLink>
           </>
-        ) : (
-          <>
-            <Link
-              to="/profile"
-              onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-3 text-lg font-medium transition-colors ${isProfileActive ? 'text-orange-200' : 'hover:text-orange-200'}`}
-            >
-              <CgProfile className={`text-3xl ${isProfileActive ? 'bg-white text-orange-600 rounded-full p-1' : ''}`} />
-              Profile
-            </Link>
-
-            <button
-              onClick={(e) => {
-                setIsOpen(false);
-                handleLogout(e);
-              }}
-              className="w-full text-left text-red-100 hover:text-white font-medium py-2 transition-colors"
-            >
-              Logout
-            </button>
-          </>
-        )}
+      )
+    
+}
       </div>
     </nav>
   );

@@ -10,5 +10,6 @@ userrouter.get('/api/homes/:homeId', homesController.getHomesDetails); // Fixed 
 userrouter.post('/api/favourites', homesController.postAddToFavourites);
 userrouter.post('/api/deletefavourite', homesController.postDeleteFavourites);
 userrouter.post('/api/cancelbooking/:bookingId', homesController.postCancelBooking);
+userrouter.post('/api/reviews', homesController.postAddReview);
 
 module.exports = userrouter;

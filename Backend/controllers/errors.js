@@ -1,7 +1,8 @@
-exports.error404=(req,res,next)=>{
-  res.status(404);
-res.render("404",{pagetitle: "page not found",
-  isLoggedIn: req.isLoggedIn,
-  currentPage: "/404"  // Ensure currentPage is set for the 404 page
-});
-}
+exports.error404 = (req, res, next) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: 'This endpoint does not exist',
+    path: req.originalUrl,
+    isLoggedIn: req.isLoggedIn || false
+  });
+};

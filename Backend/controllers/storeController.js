@@ -85,7 +85,6 @@ exports.getHomesDetails = async (req, res, next) => {
     const homeDetail = await home.findById(homeId);
     const host = await user.findById(homeDetail.userId);
     if (!host) {
-      console.log(`No host found`);
     }
     if (!homeDetail) {
       return res.status(404).json({ error: 'Home not found' });
@@ -282,6 +281,42 @@ exports.postCancelBooking = async (req, res, next) => {
   }
 
 }
+
+exports.postAddReview = async (req, res, next) => {
+  try {
+    if (!req.isLoggedIn || !req.user) {
+      return res.status(401).json({ error: 'Unauthorized, please log in' });
+    }
+
+    const { bookingId, homeId, rating, comment } = req.body;
+    const userId = req.user._id;
+
+    if (
+      !mongoose.Types.ObjectId.isValid(bookingId) ||
+      !mongoose.Types.ObjectId.isValid(homeId) ||
+      !mongoose.Types.ObjectId.isValid(userId)
+    ) {
+      return res.status(400).json({ error: 'Invalid ID' });
+    }
+
+    const bookingToReview = await booking.findOne({ _id: bookingId});
+    if (!bookingToReview) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+    bookingToReview.reviews.rating = rating;
+    bookingToReview.reviews.comment = comment;
+    await bookingToReview.save();
+
+    res.status(201).json({
+      message: 'Review added successfully',
+      booking: bookingToReview,
+    });
+  } catch (error) {
+    console.error('Error adding review:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 
 
 

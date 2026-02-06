@@ -213,9 +213,10 @@ const HostAddHome = () => {
                   className="mt-2 h-36 rounded-lg object-cover border border-gray-200"
                 />
               </div>
+            
             )}
           </div>
-
+      
           {/* Submit Button */}
           <button
             type="submit"

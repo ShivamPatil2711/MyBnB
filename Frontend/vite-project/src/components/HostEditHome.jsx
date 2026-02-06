@@ -101,7 +101,6 @@ const HostEditHome = () => {
     if (imageFile) {
       formDataToSend.append('img', imageFile);
     }
-console.log('Submitting form data for home update:', homeId);
     const response = await fetch(
       'http://localhost:4003/api/host/edithome',
       {
@@ -112,7 +111,6 @@ console.log('Submitting form data for home update:', homeId);
     );
 
     const data = await response.json();
-    console.log(data);
 
     if (!response.ok) {
       throw new Error(data.error || 'Update failed');

@@ -189,7 +189,7 @@ const HomeDetails = () => {
                         <FaStar
                           key={i}
                           className={`text-xl ${
-                            i < Math.round(home.rate || 0)
+                            i < Math.round(home.rate || 4)
                               ? 'text-orange-500'
                               : 'text-gray-300'
                           }`}

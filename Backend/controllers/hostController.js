@@ -80,9 +80,7 @@ exports.postAddHome = [
         return res.status(400).json({ error: 'All fields are required' });
       }
             const result = await uploadToCloudinary(req.file.buffer);
-            console.log('CLOUDINARY KEY:', process.env.CLOUDINARY_API_KEY);
-
-    console.log('Cloudinary upload result:', result.secure_url );
+           
       const newHome = new home({
         housename,
         street,
@@ -194,7 +192,6 @@ exports.postEditHome = [
       const userId = req.user._id;
       const { id, housename, street, city, pinCode, price, des } = req.body;
 
-      console.log('Received home edit request for ID:', id);
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid home ID' });

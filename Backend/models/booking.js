@@ -7,6 +7,10 @@ const BookingSchema = mongoose.Schema({
   age: { type: Number, required: true },
   checkin: { type: Date, required: true },
   checkout: { type: Date, required: true },
+  reviews:{
+    rating: Number,
+    comment: String,
+  },
   homeId: { type: mongoose.Schema.Types.ObjectId, ref: "Home", required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Changed from 'us' to 'userId'
 });
